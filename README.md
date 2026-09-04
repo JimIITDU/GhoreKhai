@@ -1,61 +1,157 @@
-# Ghore Khai — Flutter prototype (v1)
+# Ghore Khai
 
-A DU-verified home-cooked meal marketplace and subscription app.
-See the design doc for the full product spec.
+**A DU-verified home-cooked meal marketplace and subscription platform.**
 
-## What's in this scaffold
+Ghore Khai lets Dhaka University students who cook well sell home-cooked meals
+to fellow students nearby — as a one-time order or a subscription. Buyers get
+consistent, affordable, home-style food; cooks earn from a skill they already
+have; delivery partners earn a predictable income moving food between the two.
+Every user is verified as a real, currently-enrolled DU student before they
+can use the app.
 
-- `lib/main.dart` — app entry point
-- `lib/theme.dart` — colors and Material theme
-- `lib/models/models.dart` — data models (User, Cook, Dish, Order, etc.),
-  mirroring the database schema in the design doc
-- `lib/data/mock_data.dart` — placeholder data; **swap this for real API
-  calls** once the backend exists
-- `lib/screens/` — one file per screen:
-  - `root_screen.dart` — bottom nav + shared cart/order state
-  - `home_screen.dart` — browse cooks/dishes
-  - `dish_detail_screen.dart` — pick a plan (one-time / weekly / monthly)
-  - `cart_screen.dart` — checkout, delivery slot, cash on delivery
-  - `orders_screen.dart` — order status tracker
-  - `profile_screen.dart` — user info + Cook mode / Delivery mode toggles
+> Status: **early-stage UI prototype**, running on mock data. Not yet
+> connected to a backend, not yet on any app store. See
+> [Project Status & Roadmap](docs/ROADMAP.md) for exactly what's built and
+> what's left.
 
-## What this prototype does NOT include yet
+---
 
-This is a UI-only prototype running on mock data, built to validate the
-screens and flow before backend work starts:
+## Table of contents
 
-- No real authentication (DU email + ID card QR scan is not implemented —
-  the mock user is already "verified")
-- No backend/API calls — `mock_data.dart` stands in for the database
-- No real delivery-partner matching logic
-- No payment integration (cash on delivery is just a label, not a flow)
+- [Problem](#problem)
+- [How it works](#how-it-works)
+- [Screens](#screens)
+- [Tech stack](#tech-stack)
+- [Project structure](#project-structure)
+- [Getting started](#getting-started)
+- [Documentation](#documentation)
+- [Project status](#project-status)
 
-## Running it
+## Problem
 
-This was written in an environment without the Flutter SDK installed, so
-it has **not been run or compiled**. To run it locally:
+Hostel and mess food at DU is repetitive and often low quality. Restaurant
+delivery (Foodpanda, Pathao Food) is too expensive for daily use and isn't
+home-style. Meanwhile, some students already cook well and informally feed
+friends, but have no structured way to reach more buyers, manage orders, or
+handle delivery — and no easy way to earn from it.
 
-```bash
-flutter pub get
-flutter run
+Home-cooked food marketplaces already exist in Bangladesh (e.g. Cookups,
+since 2016), but they're city-wide, not student-to-student, not hyperlocal to
+a single campus, and not built around subscriptions tuned to a student's
+weekly routine. Ghore Khai is deliberately narrow: **DU-only, hyperlocal,
+subscription-first**, and structured around three student roles — buyer,
+cook, and delivery partner — rather than just buyer and seller.
+
+Full problem statement and design rationale: [docs/DESIGN.md](docs/DESIGN.md)
+
+## How it works
+
+1. **Buyers** browse cooks and dishes near their hall or department, order
+   once to try a dish, then move to a weekly or monthly subscription if they
+   like it.
+2. **Cooks** list dishes, set a daily order cap, and manage incoming orders
+   from a simple dashboard — no delivery burden on them.
+3. **Delivery partners** pick up ready orders from cooks and deliver them to
+   buyers nearby, with predictable daily earnings thanks to subscription
+   volume.
+4. **Verification** for all three roles is two-factor: a `@du.ac.bd` email
+   address, plus a scan of the student ID card's QR code at registration.
+
+Full user flows for each role: [docs/DESIGN.md](docs/DESIGN.md#core-user-flow)
+
+## Screens
+
+The current prototype covers the buyer-facing flow end to end, plus cook and
+delivery dashboards toggled from Profile:
+
+| Home | Dish detail | Cart | Orders | Profile |
+|---|---|---|---|---|
+| Browse cooks/dishes near you | Pick a plan (one-time / weekly / monthly) | Delivery slot, cash on delivery | Order status tracker | Cook mode & delivery mode toggles |
+
+## Tech stack
+
+- **App:** Flutter (Android), Material 3
+- **State:** built-in `StatefulWidget` / `ChangeNotifier` — no external state
+  management package yet, kept intentionally simple while the app runs on
+  mock data
+- **Backend:** not yet built — see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+  for the planned service layout
+- **Database:** planned Postgres schema documented in
+  [docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md)
+
+## Project structure
+
+```
+ghore_khai/
+├── lib/
+│   ├── main.dart              # App entry point
+│   ├── theme.dart              # Colors and Material theme
+│   ├── models/
+│   │   └── models.dart         # Data models, mirror the DB schema
+│   ├── data/
+│   │   └── mock_data.dart      # Placeholder data — swap for real API calls
+│   └── screens/
+│       ├── root_screen.dart    # Bottom nav + shared cart/order state
+│       ├── home_screen.dart
+│       ├── dish_detail_screen.dart
+│       ├── cart_screen.dart
+│       ├── orders_screen.dart
+│       └── profile_screen.dart # Includes cook mode / delivery mode toggles
+├── docs/
+│   ├── DESIGN.md               # Full product design doc
+│   ├── ARCHITECTURE.md         # System architecture
+│   ├── DATABASE_SCHEMA.md      # Database schema (ERD + tables)
+│   ├── ROADMAP.md              # What's built vs. what's left, incl. Play Store checklist
+│   └── images/
+├── android/, ios/, linux/, ... # Platform folders (generated by `flutter create .`)
+├── pubspec.yaml
+└── README.md                   # You are here
 ```
 
-You'll need the Flutter SDK and an Android emulator (or physical device)
-set up. If anything doesn't compile, it's most likely a small API
-mismatch with your installed Flutter version — the code targets Flutter
-3.x / Dart 3.x (Material 3, `NavigationBar`, `SwitchListTile`, and record
-types like `(a, b, c)` are all Dart 3 / Flutter 3.10+ features).
+## Getting started
 
-## Suggested next steps
+### Prerequisites
 
-1. Get this compiling and running on an emulator — fix any small API
-   drift first.
-2. Build the auth screen (DU email input + ID card QR camera scan) and
-   wire it in before `RootScreen`.
-3. Replace `mock_data.dart` with real API calls once the backend
-   (see architecture diagram: auth service, orders & subscriptions
-   service, delivery matching service) is up.
-4. Add the cook's "add a dish" flow and the delivery partner's
-   "available orders" list — currently only the dashboards' summary
-   cards are stubbed in `profile_screen.dart`.
-# GhoreKhai
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (developed
+  against Flutter 3.47, Dart 3.13)
+- Android SDK + either an emulator or a physical Android device with USB
+  debugging enabled
+- Java 17 (required by Android tooling)
+
+### Run it
+
+```bash
+git clone <this-repo-url>
+cd ghore_khai
+flutter pub get
+flutter devices          # confirm your emulator/phone is detected
+flutter run               # pick your device if prompted
+```
+
+If this is your first time setting up Flutter + Android tooling on Linux,
+see the step-by-step notes in [docs/SETUP_LINUX.md](docs/SETUP_LINUX.md) —
+it covers the command-line-only path (no Android Studio GUI required),
+including the emulator/KVM pitfalls and the USB-debugging fallback for
+running on a real device instead.
+
+## Documentation
+
+| Doc | What's in it |
+|---|---|
+| [docs/DESIGN.md](docs/DESIGN.md) | Full problem statement, target users, user flows for all three roles, feature list, delivery model, trust & safety, feasibility notes |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture diagram and explanation |
+| [docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) | Entity-relationship diagram and table-by-table schema |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Current build status, what's stubbed, and the checklist to reach a real release (including Play Store requirements) |
+| [docs/SETUP_LINUX.md](docs/SETUP_LINUX.md) | Command-line Flutter + Android SDK setup on Linux, written from a real first-time setup session |
+
+## Project status
+
+This is an active, in-progress project — not a finished product. See
+[docs/ROADMAP.md](docs/ROADMAP.md) for the honest, current breakdown of
+what's built, what's stubbed, and what's required before this could go on
+the Play Store.
+
+## License
+
+Internal / academic project. All rights reserved unless a license is added
+by the project owner.
