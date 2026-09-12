@@ -11,7 +11,9 @@ import 'profile_screen.dart';
 /// tabs. This is intentionally simple (no external state management
 /// package) since the app is still a prototype on mock data.
 class RootScreen extends StatefulWidget {
-  const RootScreen({super.key});
+  final AppUser user;
+
+  const RootScreen({super.key, required this.user});
 
   @override
   State<RootScreen> createState() => _RootScreenState();
@@ -46,7 +48,7 @@ class _RootScreenState extends State<RootScreen> {
       HomeScreen(dishes: MockData.dishes, onAddToCart: _addToCart),
       CartScreen(items: _cart, onPlaceOrder: _placeOrder),
       OrdersScreen(orders: _orders),
-      ProfileScreen(user: MockData.currentUser),
+      ProfileScreen(user: widget.user),
     ];
 
     return Scaffold(
