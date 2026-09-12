@@ -7,6 +7,10 @@ contributor, future you) knows exactly what's real and what's still a plan.
 ## What's built right now
 
 - A working Flutter (Android) UI prototype covering:
+  - **Local-only verification flow**: DU email format check
+    (`@du.ac.bd`), followed by a camera-based QR scan of the student ID
+    card (via `mobile_scanner`). Neither step is checked against a real DU
+    system yet — see "What's stubbed" below.
   - Buyer flow: browse → dish detail → plan selection → cart → checkout →
     order tracking
   - Cook dashboard (toggled from Profile): today's orders, weekly earnings
@@ -28,7 +32,7 @@ The app currently runs entirely on **mock data**
 
 | Area | Current state |
 |---|---|
-| Authentication | The app assumes the user is already verified — no real DU email or ID card QR scan flow exists yet |
+| Authentication | Email format and QR scan both run **locally only** — no real OTP/email verification and no server-side check that a scanned ID is a genuine, currently-enrolled DU student. Verification also doesn't persist: closing the app resets it. |
 | Backend | None — the app talks to nothing. `mock_data.dart` stands in for a real database |
 | Payments | Cash on delivery is a label in the UI, not a real payment/settlement flow |
 | Delivery matching | No real matching logic — the delivery dashboard shows static example data |
@@ -36,19 +40,23 @@ The app currently runs entirely on **mock data**
 
 ## Path to a functional (not yet store-ready) app
 
-1. Build the auth screen: DU email input + ID card QR camera scan, wired in
-   before the app's root screen
+1. ~~Build the auth screen: DU email input + ID card QR camera scan~~ —
+   done as a local-only flow (see above)
 2. Stand up the backend services described in
    [ARCHITECTURE.md](ARCHITECTURE.md) (auth, orders & subscriptions,
    delivery matching) and the database from
    [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)
-3. Replace `mock_data.dart` with real API calls throughout the `screens/`
+3. Wire the email step to a real verification send (OTP or magic link) via
+   the auth service, and the QR step to a real check against DU's ID
+   records — the current local-only checks are a placeholder for the flow,
+   not real verification
+4. Replace `mock_data.dart` with real API calls throughout the `screens/`
    folder
-4. Build the cook's "add a dish" flow and the delivery partner's "available
+5. Build the cook's "add a dish" flow and the delivery partner's "available
    orders" claim list — currently only the dashboards' summary views exist
-5. Decide and implement the delivery-matching approach (manual claiming is
+6. Decide and implement the delivery-matching approach (manual claiming is
    the recommended v1 — see [DESIGN.md § Delivery model](DESIGN.md#6-delivery-model))
-6. Pilot in a single hall/department first, per the cold-start
+7. Pilot in a single hall/department first, per the cold-start
    recommendation in [DESIGN.md](DESIGN.md#8-feasibility-notes)
 
 ## Additional requirements before Google Play Store submission

@@ -9,8 +9,9 @@ have; delivery partners earn a predictable income moving food between the two.
 Every user is verified as a real, currently-enrolled DU student before they
 can use the app.
 
-> Status: **early-stage UI prototype**, running on mock data. Not yet
-> connected to a backend, not yet on any app store. See
+> Status: **early-stage UI prototype**, running on mock data, with a
+> local-only verification flow (DU email format + ID card QR scan). Not
+> yet connected to a backend, not yet on any app store. See
 > [Project Status & Roadmap](docs/ROADMAP.md) for exactly what's built and
 > what's left.
 
