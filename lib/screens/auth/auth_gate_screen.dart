@@ -23,6 +23,20 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
   String? _fullName;
   String? _email;
 
+  // Domain must be a department subdomain of du.ac.bd, e.g.
+  // @cs.du.ac.bd, @it.du.ac.bd — NOT a bare @du.ac.bd.
+  static final _duDomainPattern = RegExp(
+    r'^[a-zA-Z0-9]+\.du\.ac\.bd$',
+  );
+
+  // Local part should roughly look like name-roll-reg (e.g.
+  // akidul-15-2022716316). Kept lenient on purpose: this is a soft
+  // shape check, not a hard validation, since exact roll/reg digit
+  // counts may vary by department/year.
+  static final _localPartShapePattern = RegExp(
+    r'^[a-zA-Z]+-[a-zA-Z0-9]+-[a-zA-Z0-9]+$',
+  );
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -50,6 +64,27 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
       verified: true,
     );
     widget.onVerified(user);
+  }
+
+  String? _validateEmail(String? v) {
+    final value = v?.trim() ?? '';
+    if (value.isEmpty) return 'Enter your email';
+
+    final parts = value.split('@');
+    if (parts.length != 2) return 'Enter a valid email address';
+
+    final localPart = parts[0];
+    final domain = parts[1].toLowerCase();
+
+    if (!_duDomainPattern.hasMatch(domain)) {
+      return 'Must be a DU department email (e.g. name@it.du.ac.bd)';
+    }
+
+    if (!_localPartShapePattern.hasMatch(localPart)) {
+      return 'Expected format: name-roll-reg (e.g. akidul-15-2022716316)';
+    }
+
+    return null;
   }
 
   @override
@@ -97,17 +132,10 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
               controller: _emailController,
               decoration: const InputDecoration(
                 labelText: 'DU email',
-                hintText: 'yourname@du.ac.bd',
+                hintText: 'name-roll-reg@dept.du.ac.bd',
               ),
               keyboardType: TextInputType.emailAddress,
-              validator: (v) {
-                final value = v?.trim() ?? '';
-                if (value.isEmpty) return 'Enter your email';
-                if (!value.toLowerCase().endsWith('@du.ac.bd')) {
-                  return 'Must be a @du.ac.bd email';
-                }
-                return null;
-              },
+              validator: _validateEmail,
             ),
             const SizedBox(height: 24),
             FilledButton(
